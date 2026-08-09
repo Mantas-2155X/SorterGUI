@@ -34,8 +34,8 @@ public class HistoryItem
 		}
 	}
 	
-	public string LeftEloChangeText => $"{(LeftEloChange < 0 ? "-" : "+")}{LeftEloChange}";
-	public string RightEloChangeText => $"{(RightEloChange < 0 ? "-" : "+")}{RightEloChange}";
+	public string LeftEloChangeText => $"{(LeftEloChange < 0 ? "" : "+")}{LeftEloChange}";
+	public string RightEloChangeText => $"{(RightEloChange < 0 ? "" : "+")}{RightEloChange}";
 
 	public IBrush LeftColor => getColor(LeftEloChange);
 	public IBrush RightColor => getColor(RightEloChange);

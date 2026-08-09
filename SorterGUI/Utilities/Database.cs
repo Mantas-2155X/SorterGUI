@@ -64,7 +64,6 @@ public class Database
 	{
 		Logger.Instance.Log("Clearing database");
 		
-		connection = new SQLiteConnection(path);
 		connection.DeleteAll<Statistics>();
 		connection.DeleteAll<ImageItem>();
 		connection.DeleteAll<HistoryItem>();
@@ -75,14 +74,17 @@ public class Database
 	public List<HistoryItem> GetHistoryItems(long amount, bool startFromLast)
 	{
 		if (startFromLast)
-			return connection.Table<HistoryItem>().TakeLast((int)amount).ToList();
+			return connection.Table<HistoryItem>().OrderByDescending(obj => obj.Id).Take((int)amount).ToList();
 
-		return connection.Table<HistoryItem>().Take((int)amount).ToList();
+		return connection.Table<HistoryItem>().OrderBy(obj => obj.Id).Take((int)amount).ToList();
 	}
 	
-	public List<HistoryItem> GetHistoryItems(long startAt, int amountPerPage)
+	public List<HistoryItem> GetHistoryItems(long startAt, int amountPerPage, bool startFromLast)
 	{
-		return connection.Table<HistoryItem>().Skip((int)startAt).Take(amountPerPage).ToList();
+		if (startFromLast)
+			return connection.Table<HistoryItem>().OrderByDescending(obj => obj.Id).Skip((int)startAt).Take(amountPerPage).ToList();
+		
+		return connection.Table<HistoryItem>().OrderBy(obj => obj.Id).Skip((int)startAt).Take(amountPerPage).ToList();
 	}
 
 	public void AddHistoryItem(long leftId, long rightId, long leftEloChange, long rightEloChange)
@@ -103,7 +105,7 @@ public class Database
 	
 	public ImageItem? GetImageItem(long id)
 	{
-		return connection.Table<ImageItem>().FirstOrDefault(obj => obj.Id == id);
+		return connection.Find<ImageItem>(id);
 	}
 	
 	public ImageItem? GetRandomImage(ImageItem? excludeImage = null)
@@ -131,12 +133,12 @@ public class Database
 
 	public bool ImageItemExists(string relativePath)
 	{
-		return connection.Table<ImageItem>().Any(obj => obj.RelativePath == relativePath);
+		return connection.Table<ImageItem>().Where(obj => obj.RelativePath == relativePath).Count() > 0;
 	}
 	
 	public long GetUnmatchedImagesCount()
 	{
-		return connection.Table<ImageItem>().Count(obj => obj.Matches == 0);
+		return connection.Table<ImageItem>().Where(obj => obj.Matches == 0).Count();
 	}
 	
 	public long GetImagesCount()
@@ -146,7 +148,7 @@ public class Database
 
 	public float GetVariation()
 	{
-		var value = connection.Table<Statistics>().FirstOrDefault(obj => obj.Key == "Variation");
+		var value = connection.Table<Statistics>().Where(obj => obj.Key == "Variation").FirstOrDefault();
 		if (value == null)
 			return 0;
 		
@@ -160,7 +162,7 @@ public class Database
 	
 	public long GetTotalComparisons()
 	{
-		var value = connection.Table<Statistics>().FirstOrDefault(obj => obj.Key == "TotalComparisons");
+		var value = connection.Table<Statistics>().Where(obj => obj.Key == "TotalComparisons").FirstOrDefault();
 		if (value == null)
 			return 0;
 		

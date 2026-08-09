@@ -418,10 +418,7 @@ public class MainWindow : Window, INotifyPropertyChanged
 			rightButton.Classes.Clear();
 			rightButton.Classes.Add(!leftWon ? "GreenDisabledBorder" : "RedDisabledBorder");
 		
-			var winner = leftWon ? LeftImage : RightImage;
-			var loser = leftWon ? RightImage : LeftImage;
-		
-			getEloChange(winner!.Elo, loser!.Elo, out var winnerEloChange, out var loserEloChange);
+			getEloChange(leftWon ? LeftImage! : RightImage!, out var winnerEloChange, out var loserEloChange);
 		
 			LeftImage!.Matches += 1;
 			LeftImage.Elo += leftWon ? winnerEloChange : loserEloChange;
@@ -429,6 +426,8 @@ public class MainWindow : Window, INotifyPropertyChanged
 			RightImage!.Matches += 1;
 			RightImage.Elo += leftWon ? loserEloChange : winnerEloChange;
 
+			Logger.Log($"{(leftWon ? LeftImage.GetName() : RightImage.GetName())} (+{winnerEloChange}) VS ({loserEloChange}) {(leftWon ? RightImage.GetName() : LeftImage.GetName())}");
+			
 			Database.AddHistoryItem(LeftImage!.Id, RightImage!.Id, leftWon ? winnerEloChange : loserEloChange, leftWon ? loserEloChange : winnerEloChange);
 			Database.SetTotalComparisons(Database.GetTotalComparisons() + 1);
 
@@ -456,10 +455,19 @@ public class MainWindow : Window, INotifyPropertyChanged
 		}
 	}
 
-	private void getEloChange(long winnerElo, long loserElo, out long winnerEloChange, out long loserEloChange)
+	private void getEloChange(ImageItem winner, out long winnerEloChange, out long loserEloChange)
 	{
-		winnerEloChange = 10;
-		loserEloChange = -10;
+		var leftWon = LeftImage == winner ? 1 : 0;
+		var rightWon = RightImage == winner ? 1 : 0;
+		
+		var expectedLeft = 1 / (Math.Pow(10, (RightImage!.Elo - LeftImage!.Elo) / 400d) + 1);
+		var expectedRight = 1 / (Math.Pow(10, (LeftImage!.Elo - RightImage!.Elo) / 400d) + 1);
+
+		var leftEloChange = 32 * (leftWon - expectedLeft);
+		var rightEloChange = 32 * (rightWon - expectedRight);
+		
+		winnerEloChange = leftWon == 1 ? (long)Math.Round(leftEloChange) : (long)Math.Round(rightEloChange);
+		loserEloChange = leftWon == 1 ? (long)Math.Round(rightEloChange) : (long)Math.Round(leftEloChange);
 	}
 
 	private float getVariation()
@@ -506,7 +514,7 @@ public class MainWindow : Window, INotifyPropertyChanged
 		{
 			token.ThrowIfCancellationRequested();
 
-			var items = Database.GetHistoryItems(HistoryPage * HistoryPerPage - HistoryPerPage, HistoryPerPage);
+			var items = Database.GetHistoryItems(HistoryPage * HistoryPerPage - HistoryPerPage, HistoryPerPage, true);
 
 			for (var i = 0; i < items.Count; i++)
 			{
