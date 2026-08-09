@@ -11,7 +11,8 @@
         Height="400"
         MinWidth="700"
         MinHeight="400"
-        x:DataType="windows:MainWindow">
+        x:DataType="windows:MainWindow"
+        Icon="/Assets/icon.ico">
     
     <Grid Background="{CompiledBinding SecondaryColor}" RowDefinitions="*,Auto">
         <TabControl Grid.Row="0" Name="TabControl" Background="{CompiledBinding SecondaryColor}" Margin="5, 5, 5, 0" Padding="0" SelectedIndex="{CompiledBinding SelectedTabIndex}">

@@ -11,7 +11,8 @@
         MinWidth="275"
         MinHeight="115"
         CanResize="False"
-        x:DataType="windows:Confirmation">
+        x:DataType="windows:Confirmation"
+        Icon="/Assets/icon.ico">
         
         <Panel Background="{CompiledBinding SecondaryColor}">
                 <DockPanel Background="{CompiledBinding PrimaryColor}" Margin="5" LastChildFill="False">

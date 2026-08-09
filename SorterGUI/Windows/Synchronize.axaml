@@ -10,7 +10,8 @@
         Height="350"
         MinWidth="500"
         MinHeight="350"
-        x:DataType="windows:Synchronize">
+        x:DataType="windows:Synchronize"
+        Icon="/Assets/icon.ico">
         
         <Grid Background="{CompiledBinding SecondaryColor}" RowDefinitions="Auto,*,Auto,Auto">
                 <!-- Changes Labels -->
