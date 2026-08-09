@@ -37,12 +37,28 @@
                         <TextBlock Grid.Column="0" Grid.Row="0" Name="LeftImageTitle" Height="20" LineHeight="20" TextAlignment="Center" FontWeight="Bold" FontSize="16"></TextBlock>
                         <Label Grid.Column="1" Grid.Row="0" Name="RightImageTitle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" FontWeight="Bold" FontSize="16"></Label>
 
-                        <Button Grid.Column="0" Grid.Row="1" Name="LeftImageButton" Classes="GreenHoverBorder" BorderBrush="White" BorderThickness="3" CornerRadius="10" ClipToBounds="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="OnLeftImageClicked">
+                        <Button Grid.Column="0" Grid.Row="1" Name="LeftImageButton" Background="{CompiledBinding AlternateColor}" Classes="GreenHoverBorder" BorderBrush="White" BorderThickness="3" CornerRadius="10" ClipToBounds="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="OnLeftImageClicked">
+                            <Button.Styles>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="{CompiledBinding AlternateColor}"></Setter>
+                                </Style>
+                                <Style Selector="Button:pressed /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="{CompiledBinding AlternateColor}"></Setter>
+                                </Style>
+                            </Button.Styles>
                             <Panel>
                                 <extensions:RoundedImage Name="LeftImage" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
                             </Panel>
                         </Button>
-                        <Button Grid.Column="1" Grid.Row="1" Name="RightImageButton" Classes="GreenHoverBorder" BorderBrush="White" BorderThickness="3" CornerRadius="10" ClipToBounds="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="OnRightImageClicked">
+                        <Button Grid.Column="1" Grid.Row="1" Name="RightImageButton" Background="{CompiledBinding AlternateColor}" Classes="GreenHoverBorder" BorderBrush="White" BorderThickness="3" CornerRadius="10" ClipToBounds="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="OnRightImageClicked">
+                            <Button.Styles>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="{CompiledBinding AlternateColor}"></Setter>
+                                </Style>
+                                <Style Selector="Button:pressed /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="{CompiledBinding AlternateColor}"></Setter>
+                                </Style>
+                            </Button.Styles>
                             <Panel>
                                 <extensions:RoundedImage Name="RightImage" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
                             </Panel>

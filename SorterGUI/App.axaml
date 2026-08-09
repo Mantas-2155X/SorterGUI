@@ -14,7 +14,15 @@
             <Setter Property="BorderBrush" Value="SpringGreen"/>
         </Style>
         
+        <Style Selector="Button.GreenHoverBorder:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="SpringGreen"/>
+        </Style>
+        
         <Style Selector="Button.RedHoverBorder:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="OrangeRed"/>
+        </Style>
+        
+        <Style Selector="Button.RedHoverBorder:pressed /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="BorderBrush" Value="OrangeRed"/>
         </Style>
         
