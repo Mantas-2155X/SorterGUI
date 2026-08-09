@@ -18,8 +18,6 @@ using Avalonia.VisualTree;
 using SorterGUI.Items;
 using SorterGUI.Utilities;
 
-// better maths
-
 namespace SorterGUI.Windows;
 
 public class MainWindow : Window, INotifyPropertyChanged
