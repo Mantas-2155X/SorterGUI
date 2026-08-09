@@ -1,0 +1,29 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SorterGUI.App"
+             RequestedThemeVariant="Dark">
+    
+    <Application.Styles>
+        <FluentTheme />
+        
+        <Style Selector=":is(TopLevel)">
+            <Setter Property="FontFamily" Value="Noto Sans"/>
+        </Style>
+
+        <Style Selector="Button.GreenHoverBorder:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="SpringGreen"/>
+        </Style>
+        
+        <Style Selector="Button.RedHoverBorder:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="OrangeRed"/>
+        </Style>
+        
+        <Style Selector="Button.GreenDisabledBorder:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="SpringGreen"/>
+        </Style>
+        
+        <Style Selector="Button.RedDisabledBorder:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="OrangeRed"/>
+        </Style>
+    </Application.Styles>
+</Application>

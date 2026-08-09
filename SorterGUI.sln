@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SorterGUI", "SorterGUI\SorterGUI.csproj", "{EBC5AA91-B99B-4026-9A3B-1F81C9B582BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EBC5AA91-B99B-4026-9A3B-1F81C9B582BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBC5AA91-B99B-4026-9A3B-1F81C9B582BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBC5AA91-B99B-4026-9A3B-1F81C9B582BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBC5AA91-B99B-4026-9A3B-1F81C9B582BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

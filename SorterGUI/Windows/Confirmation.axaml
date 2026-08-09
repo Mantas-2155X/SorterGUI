@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:windows="clr-namespace:SorterGUI.Windows"
+        mc:Ignorable="d" d:DesignWidth="275" d:DesignHeight="115"
+        x:Class="SorterGUI.Windows.Confirmation"
+        Title="Confirm"
+        Width="275"
+        Height="115"
+        MinWidth="275"
+        MinHeight="115"
+        CanResize="False"
+        x:DataType="windows:Confirmation">
+        
+        <Panel Background="{CompiledBinding SecondaryColor}">
+                <DockPanel Background="{CompiledBinding PrimaryColor}" Margin="5" LastChildFill="False">
+                        <Label DockPanel.Dock="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="50" Margin="0, 5, 0, 0" FontSize="18" Content="{CompiledBinding AreYouSureText}"></Label>
+                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0, 0, 0, 10">
+                                <Button Background="{CompiledBinding SecondaryColor}" Width="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnYesClicked" Content="{CompiledBinding YesText}"></Button>
+                                <Button Background="{CompiledBinding SecondaryColor}" Width="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnNoClicked" Content="{CompiledBinding NoText}"></Button>
+                        </StackPanel>
+                </DockPanel>
+        </Panel>
+</Window>

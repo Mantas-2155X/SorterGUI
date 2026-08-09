@@ -1,0 +1,134 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:extensions="clr-namespace:SorterGUI.Extensions"
+        xmlns:windows="clr-namespace:SorterGUI.Windows"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="350"
+        x:Class="SorterGUI.Windows.MainWindow"
+        Title="SorterGUI"
+        Width="700"
+        Height="400"
+        MinWidth="700"
+        MinHeight="400"
+        x:DataType="windows:MainWindow">
+    
+    <Grid Background="{CompiledBinding SecondaryColor}" RowDefinitions="*,Auto">
+        <TabControl Grid.Row="0" Name="TabControl" Background="{CompiledBinding SecondaryColor}" Margin="5, 5, 5, 0" Padding="0" SelectedIndex="{CompiledBinding SelectedTabIndex}">
+            <TabItem Background="{CompiledBinding PrimaryColor}" Header="{CompiledBinding StatisticsTabText}">
+                <StackPanel Background="{CompiledBinding PrimaryColor}" Margin="0, 5, 0, 0">
+                    <Label Name="AvailableImages" FontSize="16"></Label>
+                    <Label Name="UnmatchedImages" FontSize="16"></Label>
+                    <Label Name="StatisticsVariation" FontSize="16"></Label>
+                    <Panel Background="{CompiledBinding SecondaryColor}" Height="5"></Panel>
+                    <Label Name="TotalComparisons" FontSize="16"></Label>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Background="{CompiledBinding PrimaryColor}" Header="{CompiledBinding SortImagesTabText}">
+                <Grid Background="{CompiledBinding PrimaryColor}" RowDefinitions="Auto,*,Auto,Auto" Margin="0, 5, 0, 0">
+                    <Label Grid.Row="1" Name="SortUnavailable" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="24" Content="{CompiledBinding NotEnoughImagesText}"></Label>
+
+                    <!-- Top Bar -->
+                    <TextBlock Grid.Row="0" Name="Sort1" Height="30" HorizontalAlignment="Stretch" TextAlignment="Center" FontWeight="Bold" FontSize="20" Text="{CompiledBinding WhichDoYouPreferText}"></TextBlock>
+                    
+                    <!-- Sorter Buttons -->
+                    <Grid Grid.Row="1" Name="Sort2" ColumnDefinitions="*,*" RowDefinitions="Auto,*" ColumnSpacing="5" Margin="5,0,5,0">
+                        <TextBlock Grid.Column="0" Grid.Row="0" Name="LeftImageTitle" Height="20" LineHeight="20" TextAlignment="Center" FontWeight="Bold" FontSize="16"></TextBlock>
+                        <Label Grid.Column="1" Grid.Row="0" Name="RightImageTitle" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Top" FontWeight="Bold" FontSize="16"></Label>
+
+                        <Button Grid.Column="0" Grid.Row="1" Name="LeftImageButton" Classes="GreenHoverBorder" BorderBrush="White" BorderThickness="3" CornerRadius="10" ClipToBounds="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="OnLeftImageClicked">
+                            <Panel>
+                                <extensions:RoundedImage Name="LeftImage" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
+                            </Panel>
+                        </Button>
+                        <Button Grid.Column="1" Grid.Row="1" Name="RightImageButton" Classes="GreenHoverBorder" BorderBrush="White" BorderThickness="3" CornerRadius="10" ClipToBounds="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="OnRightImageClicked">
+                            <Panel>
+                                <extensions:RoundedImage Name="RightImage" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
+                            </Panel>
+                        </Button>
+                    </Grid>
+                
+                    <!-- Stats Bar -->
+                    <Grid Grid.Row="2" Name="Sort3" ColumnDefinitions="*,*">
+                        <Label Grid.Column="0" Name="MatchedImages" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
+                        <Label Grid.Column="1" Name="Variation" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            
+            <TabItem Background="{CompiledBinding PrimaryColor}" Header="{CompiledBinding HistoryTabText}">
+                <Grid Background="{CompiledBinding SecondaryColor}" Margin="0, 5, 0, 0" RowDefinitions="*,Auto">
+                    <ListBox Grid.Row="0" Name="HistoryList" Background="{CompiledBinding PrimaryColor}" ItemsSource="{CompiledBinding HistoryItems}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="*, Auto, Auto, Auto, *">
+                                    <TextBlock Grid.Column="0" TextAlignment="Center" Foreground="{CompiledBinding LeftColor}" Text="{CompiledBinding LeftName}"></TextBlock>
+                                    <TextBlock Grid.Column="1" Width="50" TextAlignment="Left" Foreground="{CompiledBinding LeftColor}" Text="{CompiledBinding LeftEloChangeText}"></TextBlock>
+                                    <TextBlock Grid.Column="2" Width="30" TextAlignment="Center" FontWeight="Bold" Text="VS"></TextBlock>
+                                    <TextBlock Grid.Column="3" Width="50" TextAlignment="Right" Foreground="{CompiledBinding RightColor}" Text="{CompiledBinding RightEloChangeText}"></TextBlock>
+                                    <TextBlock Grid.Column="4" TextAlignment="Center" Foreground="{CompiledBinding RightColor}" Text="{CompiledBinding RightName}"></TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Panel Grid.Row="1" Background="{CompiledBinding PrimaryColor}" Height="40" Margin="0, 5, 0, 0">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" Spacing="5">
+                            <Button Background="{CompiledBinding SecondaryColor}" Click="OnFirstHistoryPageClicked">&lt;&lt;</Button>
+                            <Button Background="{CompiledBinding SecondaryColor}" Click="OnPreviousHistoryPageClicked">&lt;</Button>
+                            <NumericUpDown Name="HistoryPage" FormatString="N0" ParsingNumberStyle="Integer" Increment="1" Width="75" Height="30" FontSize="13" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Value="{CompiledBinding HistoryPage, UpdateSourceTrigger=LostFocus}" GotFocus="OnHistoryPageGotFocus" KeyDown="OnHistoryPageKeyDown" ShowButtonSpinner="False" AllowSpin="False">
+                                <NumericUpDown.Styles>
+                                    <Style Selector="NumericUpDown /template/ TextBox#PART_TextBox">
+                                        <Setter Property="MaxLength" Value="7"/>
+                                    </Style>
+                                </NumericUpDown.Styles>
+                            </NumericUpDown>
+                            <Button Background="{CompiledBinding SecondaryColor}" Click="OnNextHistoryPageClicked">&gt;</Button>
+                            <Button Background="{CompiledBinding SecondaryColor}" Click="OnLastHistoryPageClicked">&gt;&gt;</Button>
+                        </StackPanel>
+                    </Panel>
+                </Grid>
+            </TabItem>
+            
+            <TabItem Background="{CompiledBinding PrimaryColor}" Header="{CompiledBinding OptionsTabText}">
+                <StackPanel Background="{CompiledBinding PrimaryColor}" Spacing="2" Margin="0, 5, 0, 0">
+                    <Grid Background="{CompiledBinding AlternateColor}" ColumnDefinitions="125,*,Auto" ColumnSpacing="5" Height="43">
+                        <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{CompiledBinding ImagesPathText}"></Label>
+                        <TextBox Grid.Column="1" Name="ImagesPath" Margin="0,4, 0, 4" IsReadOnly="True" Text="{CompiledBinding ImagesPathSettingText}"></TextBox>
+                        <Button Grid.Column="2" Margin="0,4, 4, 4" Background="{CompiledBinding PrimaryColor}" Width="100" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnPickImagesPathClicked" Content="{CompiledBinding PickText}"></Button>
+                    </Grid>
+                    
+                    <Grid Background="{CompiledBinding AlternateColor}" ColumnDefinitions="125,*" Height="43">
+                        <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{CompiledBinding BottomBarText}"></Label>
+                        <ToggleSwitch Grid.Column="1" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" OffContent="{CompiledBinding BottomBarDescText}" OnContent="{CompiledBinding BottomBarDescText}" IsChecked="{CompiledBinding BottomBarSettingText}"></ToggleSwitch>
+                    </Grid>
+                    
+                    <Grid Background="{CompiledBinding AlternateColor}" ColumnDefinitions="125,*,Auto" Height="43">
+                        <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{CompiledBinding ImagesText}"></Label>
+                        <Label Grid.Column="1" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="{CompiledBinding SyncDescText}"></Label>
+                        <Button Grid.Column="2" Margin="0,4, 4, 4" Background="{CompiledBinding PrimaryColor}" Width="100" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnSyncClicked" Content="{CompiledBinding SyncText}"></Button>
+                    </Grid>
+                    
+                    <Grid Background="{CompiledBinding AlternateColor}" ColumnDefinitions="125,*,Auto" Height="43">
+                        <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{CompiledBinding DatabaseText}"></Label>
+                        <Label Grid.Column="1" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="{CompiledBinding DatabaseDescText}"></Label>
+                        <Button Grid.Column="2" Foreground="OrangeRed" Margin="0,4, 4, 4" Background="{CompiledBinding PrimaryColor}" Width="100" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnResetDatabaseClicked" Content="{CompiledBinding ResetText}"></Button>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
+            
+            <TabItem Background="{CompiledBinding PrimaryColor}" Header="{CompiledBinding AboutTabText}">
+                <DockPanel Background="{CompiledBinding PrimaryColor}" LastChildFill="False" Margin="0, 5, 0, 0">
+                    <Label DockPanel.Dock="Top" FontSize="24" Content="{CompiledBinding AppVersionText}"></Label>
+                    <TextBlock DockPanel.Dock="Top" LineHeight="28" Padding="5,0,0,0" FontSize="16" xml:space="preserve" Text="{CompiledBinding AboutText}"></TextBlock>
+                    <Label DockPanel.Dock="Bottom" FontSize="16" Content="{CompiledBinding MadeByText}"></Label>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+        
+        <!-- Bottom Bar -->
+        <DockPanel Grid.Row="1" Background="{CompiledBinding PrimaryColor}" Margin="5,0,5,5" LastChildFill="False" HorizontalSpacing="5">
+            <Button DockPanel.Dock="Left" Background="{CompiledBinding SecondaryColor}" Margin="4, 4, 4, 4" Width="100" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnExitClicked" IsVisible="{CompiledBinding BottomBarSettingText}" Content="{CompiledBinding ExitText}"></Button>
+        </DockPanel>
+    </Grid>
+</Window>
