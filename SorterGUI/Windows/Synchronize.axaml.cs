@@ -53,12 +53,24 @@ public class Synchronize : Window, INotifyPropertyChanged
 			OnPropertyChanged();
 		}
 	}
+
+	private bool scanning;
+	public bool Scanning
+	{
+		get => scanning;
+		set
+		{
+			scanning = value;
+			OnPropertyChanged();
+		}
+	}
 	
 	#region Text
 
 	public string RemoveText => "Remove from database";
 	public string AddText => "Add to database";
 	public string WarningText => "⚠ Changing an image file with the same name is not recognized ⚠";
+	public string ScanningText => "Scanning...";
 	public string SynchronizeText => "Synchronize";
 	public string CancelText => "Cancel";
 
@@ -208,10 +220,6 @@ public class Synchronize : Window, INotifyPropertyChanged
 		var addScrollViewer = addListBox.FindDescendantOfType<ScrollViewer>();
 		if (addScrollViewer != null)
 			addScrollViewer.Offset = Vector.Zero;
-		
-		var fileItems = getItems();
-		if (fileItems == null)
-			return;
 
 		if (CancellationTokenSource != null)
 		{
@@ -221,15 +229,24 @@ public class Synchronize : Window, INotifyPropertyChanged
 		
 		CancellationTokenSource = new CancellationTokenSource();
 		
-		_ = populateListsAsync(fileItems, removeList, addList, CancellationTokenSource.Token);
+		_ = populateListsAsync(removeList, addList, CancellationTokenSource.Token);
 	}
 
-	private async Task populateListsAsync(List<SyncItem> fileItems, IList removeSource, IList addSource, CancellationToken token)
+	private async Task populateListsAsync(IList removeSource, IList addSource, CancellationToken token)
 	{
 		try
 		{
 			token.ThrowIfCancellationRequested();
 
+			Scanning = true;
+			
+			var fileItems = getItems();
+			if (fileItems == null)
+			{
+				Scanning = false;
+				return;
+			}
+			
 			for (var i = 0; i < fileItems.Count; i++)
 			{
 				if (i % 5 == 0)
@@ -264,7 +281,8 @@ public class Synchronize : Window, INotifyPropertyChanged
 					removeSource.Add(new SyncItem { RelativePath = databaseItem.RelativePath });
 			}
 
-			CanSynchronize = true;
+			Scanning = false;
+			CanSynchronize = addSource.Count > 0 || removeSource.Count > 0;
 		}
 		catch (TaskCanceledException)
 		{
@@ -278,6 +296,9 @@ public class Synchronize : Window, INotifyPropertyChanged
 
 	private List<SyncItem>? getItems()
 	{
+		if (Design.IsDesignMode)
+			return new List<SyncItem>();
+		
 		var settingPath = Settings.Instance.GetStringSetting("imagespath").TrimEnd('/', '\\');
 		if (!Directory.Exists(settingPath))
 		{
@@ -287,7 +308,7 @@ public class Synchronize : Window, INotifyPropertyChanged
 
 		var list = new List<SyncItem>();
 		
-		var files = Directory.GetFiles(settingPath);
+		var files = Directory.GetFiles(settingPath, "*", SearchOption.AllDirectories);
 		for (var i = 0; i < files.Length; i++)
 		{
 			var fileInfo = new FileInfo(files[i]);

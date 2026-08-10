@@ -424,15 +424,17 @@ public class MainWindow : Window, INotifyPropertyChanged
 			RightImage!.Matches += 1;
 			RightImage.Elo += leftWon ? loserEloChange : winnerEloChange;
 
-			Logger.Log($"{(leftWon ? LeftImage.GetName() : RightImage.GetName())} (+{winnerEloChange}) VS ({loserEloChange}) {(leftWon ? RightImage.GetName() : LeftImage.GetName())}");
+			var newVariation = getNewVariation();
+
+			Logger.Log($"{(leftWon ? LeftImage.RelativePath : RightImage.RelativePath)} (+{winnerEloChange}) VS ({loserEloChange}) {(leftWon ? RightImage.RelativePath : LeftImage.RelativePath)} | Var {Database.GetVariation():F2} -> {newVariation:F2}");
 			
 			Database.AddHistoryItem(LeftImage!.Id, RightImage!.Id, leftWon ? winnerEloChange : loserEloChange, leftWon ? loserEloChange : winnerEloChange);
+			
 			Database.SetTotalComparisons(Database.GetTotalComparisons() + 1);
+			Database.SetVariation(newVariation);
 
 			Database.UpdateImageItem(LeftImage);
 			Database.UpdateImageItem(RightImage);
-		
-			Database.SetVariation(getVariation());
 			
 			await Task.Delay(300);
 			setupSortImages();
@@ -468,7 +470,7 @@ public class MainWindow : Window, INotifyPropertyChanged
 		loserEloChange = leftWon == 1 ? (long)Math.Round(rightEloChange) : (long)Math.Round(leftEloChange);
 	}
 
-	private float getVariation()
+	private float getNewVariation()
 	{
 		var compareAmount = Math.Max((long)(Database.GetImagesCount() * 0.15f), 15L);
 		var totalElo = 0f;

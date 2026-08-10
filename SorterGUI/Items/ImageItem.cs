@@ -1,6 +1,8 @@
+using System;
 using System.IO;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using SorterGUI.Utilities;
 using SQLite;
 
@@ -28,23 +30,26 @@ public class ImageItem
 		Matches = matches;
 		Elo = elo;
 	}
+
+	public bool FileExists(out FileInfo fileInfo)
+	{
+		fileInfo = new FileInfo(Settings.Instance.GetStringSetting("imagespath") + "/" + RelativePath);
+		return fileInfo.Exists;
+	}
 	
 	public string GetName()
 	{
-		var fileInfo = new FileInfo(Settings.Instance.GetStringSetting("imagespath") + "/" + RelativePath);
-		if (!fileInfo.Exists)
-			return "";
+		if (!FileExists(out var fileInfo))
+			return RelativePath;
 		
 		return Path.GetFileNameWithoutExtension(fileInfo.Name);
 	}
 	
-	public IImage? GetImage()
+	public IImage GetImage()
 	{
-		var fileInfo = new FileInfo(Settings.Instance.GetStringSetting("imagespath") + "/" + RelativePath);
-		if (!fileInfo.Exists)
-			return null;
+		if (!FileExists(out var fileInfo))
+			return new Bitmap(AssetLoader.Open(new Uri("avares://SorterGUI/Assets/missingimage.png")));
 
-		var bitmap = new Bitmap(fileInfo.FullName);
-		return bitmap;
+		return new Bitmap(fileInfo.FullName);
 	}
 }

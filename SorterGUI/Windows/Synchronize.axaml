@@ -42,9 +42,10 @@
                 <Label Grid.Row="2" Background="{CompiledBinding PrimaryColor}" Margin="5, 0, 5, 5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="Yellow" Content="{CompiledBinding WarningText}"></Label>
                 
                 <!-- Bottom Bar -->
-                <DockPanel Grid.Row="3" Background="{CompiledBinding PrimaryColor}" Margin="5,0,5,5" LastChildFill="False" HorizontalSpacing="5">
-                        <Button DockPanel.Dock="Left" Name="Cancel" IsEnabled="{CompiledBinding Synchronized}" Background="{CompiledBinding SecondaryColor}" Margin="4, 4, 4, 4" Width="100" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnCancelClicked" Content="{CompiledBinding CancelText}"></Button>
-                        <Button DockPanel.Dock="Right" Name="Synchronize" IsEnabled="{CompiledBinding CanSynchronize}" Background="{CompiledBinding SecondaryColor}" Margin="4, 4, 4, 4" Width="125" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnSynchronizeClicked" Content="{CompiledBinding SynchronizeText}"></Button>
-                </DockPanel>
+                <Grid Grid.Row="3" Background="{CompiledBinding PrimaryColor}" Margin="5,0,5,5" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="5">
+                        <Button Grid.Column="0" Name="Cancel" IsEnabled="{CompiledBinding Synchronized}" Background="{CompiledBinding SecondaryColor}" Margin="4, 4, 4, 4" Width="100" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnCancelClicked" Content="{CompiledBinding CancelText}"></Button>
+                        <Label Grid.Column="1" IsVisible="{CompiledBinding Scanning}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{CompiledBinding ScanningText}"></Label>
+                        <Button Grid.Column="2" Name="Synchronize" IsEnabled="{CompiledBinding CanSynchronize}" Background="{CompiledBinding SecondaryColor}" Margin="4, 4, 4, 4" Width="125" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnSynchronizeClicked" Content="{CompiledBinding SynchronizeText}"></Button>
+                </Grid>
         </Grid>
 </Window>

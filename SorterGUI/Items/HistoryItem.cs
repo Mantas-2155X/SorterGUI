@@ -21,7 +21,7 @@ public class HistoryItem
 		get
 		{
 			var item = Database.Instance.GetImageItem(LeftId);
-			return item == null ? "" : item.GetName();
+			return item == null ? "**UNREGISTERED**" : item.GetName();
 		}
 	}
 	
@@ -30,7 +30,7 @@ public class HistoryItem
 		get
 		{
 			var item = Database.Instance.GetImageItem(RightId);
-			return item == null ? "" : item.GetName();
+			return item == null ? "**UNREGISTERED**" : item.GetName();
 		}
 	}
 	
