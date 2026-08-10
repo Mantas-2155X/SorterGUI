@@ -172,7 +172,7 @@
         </TabControl>
         
         <!-- Bottom Bar -->
-        <DockPanel Grid.Row="1" Background="{CompiledBinding PrimaryColor}" Margin="5,0,5,5" LastChildFill="False" HorizontalSpacing="5">
+        <DockPanel Grid.Row="1" Background="{CompiledBinding PrimaryColor}" Margin="5,5,5,5" LastChildFill="False" HorizontalSpacing="5">
             <Button DockPanel.Dock="Left" Background="{CompiledBinding SecondaryColor}" Margin="4, 4, 4, 4" Width="100" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnExitClicked" IsVisible="{CompiledBinding BottomBarSettingText}" Content="{CompiledBinding ExitText}"></Button>
         </DockPanel>
     </Grid>
