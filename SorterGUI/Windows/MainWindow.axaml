@@ -15,7 +15,7 @@
         Icon="/Assets/icon.ico">
     
     <Grid Background="{CompiledBinding SecondaryColor}" RowDefinitions="*,Auto">
-        <TabControl Grid.Row="0" Name="TabControl" Background="{CompiledBinding SecondaryColor}" Margin="5, 5, 5, 0" Padding="0" SelectedIndex="{CompiledBinding SelectedTabIndex}">
+        <TabControl Grid.Row="0" Name="TabControl" Background="{CompiledBinding SecondaryColor}" Margin="5, 5, 5, 5" Padding="0" SelectedIndex="{CompiledBinding SelectedTabIndex}">
             <TabItem Background="{CompiledBinding PrimaryColor}" Header="{CompiledBinding StatisticsTabText}">
                 <StackPanel Background="{CompiledBinding PrimaryColor}" Margin="0, 5, 0, 0">
                     <Label Name="AvailableImages" FontSize="16"></Label>
@@ -172,8 +172,8 @@
         </TabControl>
         
         <!-- Bottom Bar -->
-        <DockPanel Grid.Row="1" Background="{CompiledBinding PrimaryColor}" Margin="5,5,5,5" LastChildFill="False" HorizontalSpacing="5">
-            <Button DockPanel.Dock="Left" Background="{CompiledBinding SecondaryColor}" Margin="4, 4, 4, 4" Width="100" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnExitClicked" IsVisible="{CompiledBinding BottomBarSettingText}" Content="{CompiledBinding ExitText}"></Button>
+        <DockPanel Grid.Row="1" IsVisible="{CompiledBinding BottomBarSettingText}" Background="{CompiledBinding PrimaryColor}" Margin="5,0,5,5" LastChildFill="False" HorizontalSpacing="5">
+            <Button DockPanel.Dock="Left" Background="{CompiledBinding SecondaryColor}" Margin="4, 4, 4, 4" Width="100" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnExitClicked" Content="{CompiledBinding ExitText}"></Button>
         </DockPanel>
     </Grid>
 </Window>
