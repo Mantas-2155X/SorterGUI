@@ -27,6 +27,7 @@ public class MainWindow : Window, INotifyPropertyChanged
 	public Database Database { get; }
 
 	public ObservableCollection<HistoryItem> HistoryItems { get; } = new ();
+	public ObservableCollection<ImageItem> ImageItems { get; } = new ();
 
 	private int selectedTabIndex = -1;
 	public int SelectedTabIndex
@@ -44,20 +45,24 @@ public class MainWindow : Window, INotifyPropertyChanged
 			{
 				setupStatistics();
 			}
-			else if (value == 1) // Sort Images
+			else if (value == 1) // Images
+			{
+				setupImages();
+			}
+			else if (value == 2) // Sort
 			{
 				setupSortImages();
 			}
-			else if (value == 2) // History
+			else if (value == 3) // History
 			{
 				// Already calls setup
 				HistoryPage = 1;
 			}
-			else if (value == 3) // Options
+			else if (value == 4) // Options
 			{
 			
 			}
-			else if (value == 4) // About
+			else if (value == 5) // About
 			{
 
 			}
@@ -84,25 +89,36 @@ public class MainWindow : Window, INotifyPropertyChanged
 	}
 	
 	public int HistoryPerPage => 50;
-	public int SortImagesRetries;
 	
+	public int SortImagesRetries;
 	public bool PickingWinner;
 
 	public ImageItem? LeftImage;
 	public ImageItem? RightImage;
 
-	public CancellationTokenSource? CancellationTokenSource = new ();
+	public CancellationTokenSource? SortCancellationTokenSource = new ();
+	public CancellationTokenSource? HistoryCancellationTokenSource = new ();
 
 	#region Text
 
 	public string StatisticsTabText => "Statistics";
-	public string SortImagesTabText => "Sort Images";
+	public string SortImagesTabText => "Sort";
 	public string HistoryTabText => "History";
+	public string ImagesTabText => "Images";
 	public string OptionsTabText => "Options";
 	public string AboutTabText => "About";
 	
 	public string WhichDoYouPreferText => "Which do you prefer?";
 	public string NotEnoughImagesText => "At least two images must be registered before sorting";
+
+	public string ImageText => "Image";
+	public string FilenameText => "Filename";
+	public string EloText => "Elo";
+	public string MatchesText => "Matches";
+	
+	public string LeftNameText => "Left Name";
+	public string RightNameText => "Right Name";
+	public string EloChangeText => "Elo Change";
 	
 	public string ImagesPathText => "Images Path";
 	public string ImagesPathSettingText
@@ -189,8 +205,7 @@ public class MainWindow : Window, INotifyPropertyChanged
 		{
 			var confirmation = new Confirmation();
 		
-			var result = await confirmation.ShowDialog<bool>(this);
-			if (!result)
+			if (!await confirmation.ShowDialog<bool>(this))
 				return;
 
 			Database.ClearDatabase();
@@ -214,6 +229,27 @@ public class MainWindow : Window, INotifyPropertyChanged
 		}
 	}
 
+	public void OnExitClicked(object? sender, RoutedEventArgs e)
+	{
+		Close();
+	}
+	
+	public void OnLeftImageClicked(object? sender, RoutedEventArgs e)
+	{
+		if (PickingWinner)
+			return;
+		
+		_ = pickWinner(true);
+	}
+	
+	public void OnRightImageClicked(object? sender, RoutedEventArgs e)
+	{
+		if (PickingWinner)
+			return;
+
+		_ = pickWinner(false);
+	}
+	
 	public void OnFirstHistoryPageClicked(object? sender, RoutedEventArgs e)
 	{
 		HistoryPage = 1;
@@ -239,23 +275,7 @@ public class MainWindow : Window, INotifyPropertyChanged
 	{
 		HistoryPage = Database.GetHistoryPages(HistoryPerPage);
 	}
-	
-	public void OnLeftImageClicked(object? sender, RoutedEventArgs e)
-	{
-		if (PickingWinner)
-			return;
-		
-		_ = pickWinner(true);
-	}
-	
-	public void OnRightImageClicked(object? sender, RoutedEventArgs e)
-	{
-		if (PickingWinner)
-			return;
 
-		_ = pickWinner(false);
-	}
-	
 	public void OnHistoryPageKeyDown(object? sender, KeyEventArgs e)
 	{
 		if (sender is not NumericUpDown numericUpDown)
@@ -291,11 +311,6 @@ public class MainWindow : Window, INotifyPropertyChanged
 			return;
 
 		textBox.SelectAll();
-	}
-	
-	public void OnExitClicked(object? sender, RoutedEventArgs e)
-	{
-		Close();
 	}
 	
 	#endregion
@@ -362,12 +377,20 @@ public class MainWindow : Window, INotifyPropertyChanged
 			Logger.Instance.Log("Less than two images registered, skipping sorting");
 			return;
 		}
+		else
+		{
+			this.GetControl<Label>("SortUnavailable").IsVisible = false;
+			this.GetControl<TextBlock>("Sort1").IsVisible = true;
+			this.GetControl<Grid>("Sort2").IsVisible = true;
+			this.GetControl<Grid>("Sort3").IsVisible = true;
+		}
+		
+		this.GetControl<TextBlock>("LeftImageTitle").Text = "";
+		this.GetControl<Label>("RightImageTitle").Content = "";
 
-		this.GetControl<Label>("SortUnavailable").IsVisible = false;
-		this.GetControl<TextBlock>("Sort1").IsVisible = true;
-		this.GetControl<Grid>("Sort2").IsVisible = true;
-		this.GetControl<Grid>("Sort3").IsVisible = true;
-
+		this.GetControl<Image>("LeftImage").Source = null;
+		this.GetControl<Image>("RightImage").Source = null;
+		
 		LeftImage = Database.GetRandomImage();
 		RightImage = Database.GetRandomImage(LeftImage);
 		
@@ -375,12 +398,6 @@ public class MainWindow : Window, INotifyPropertyChanged
 		{
 			if (SortImagesRetries >= 3)
 			{
-				this.GetControl<TextBlock>("LeftImageTitle").Text = "";
-				this.GetControl<Label>("RightImageTitle").Content = "";
-
-				this.GetControl<Image>("LeftImage").Source = null;
-				this.GetControl<Image>("RightImage").Source = null;
-				
 				Logger.Instance.Log("Hit the limit for null images, giving up");
 				return;
 			}
@@ -395,8 +412,41 @@ public class MainWindow : Window, INotifyPropertyChanged
 		this.GetControl<TextBlock>("LeftImageTitle").Text = LeftImage.GetName();
 		this.GetControl<Label>("RightImageTitle").Content = RightImage.GetName();
 
-		this.GetControl<Image>("LeftImage").Source = LeftImage.GetImage();
-		this.GetControl<Image>("RightImage").Source = RightImage.GetImage();
+		if (SortCancellationTokenSource != null)
+		{
+			SortCancellationTokenSource.Cancel(); 
+			SortCancellationTokenSource = null;
+		}
+		
+		SortCancellationTokenSource = new CancellationTokenSource();
+		
+		_ = loadImages(SortCancellationTokenSource.Token);
+	}
+
+	private async Task loadImages(CancellationToken token)
+	{
+		try
+		{
+			token.ThrowIfCancellationRequested();
+
+			var height = Screens.Primary!.Bounds.Height;
+			
+			var leftTask = LeftImage!.GetImageAsync(height);
+			var rightTask = RightImage!.GetImageAsync(height);
+
+			await Task.WhenAll(leftTask, rightTask);
+			
+			this.GetControl<Image>("LeftImage").Source = leftTask.Result;
+			this.GetControl<Image>("RightImage").Source = rightTask.Result;
+		}
+		catch (TaskCanceledException)
+		{
+			
+		}
+		catch (Exception ex)
+		{
+			Logger.Instance.Log(ex.ToString());
+		}
 	}
 
 	private async Task pickWinner(bool leftWon)
@@ -497,15 +547,15 @@ public class MainWindow : Window, INotifyPropertyChanged
 		if (scrollViewer != null)
 			scrollViewer.Offset = Vector.Zero;
 		
-		if (CancellationTokenSource != null)
+		if (HistoryCancellationTokenSource != null)
 		{
-			CancellationTokenSource.Cancel(); 
-			CancellationTokenSource = null;
+			HistoryCancellationTokenSource.Cancel(); 
+			HistoryCancellationTokenSource = null;
 		}
 		
-		CancellationTokenSource = new CancellationTokenSource();
+		HistoryCancellationTokenSource = new CancellationTokenSource();
 
-		_ = populateHistoryAsync(list, CancellationTokenSource.Token);
+		_ = populateHistoryAsync(list, HistoryCancellationTokenSource.Token);
 	}
 
 	private async Task populateHistoryAsync(IList itemsSource, CancellationToken token)
@@ -518,7 +568,59 @@ public class MainWindow : Window, INotifyPropertyChanged
 
 			for (var i = 0; i < items.Count; i++)
 			{
-				if (i % 5 == 0)
+				if (i % 25 == 0)
+					await Task.Delay(25, token);
+
+				itemsSource.Add(items[i]);
+			}
+		}
+		catch (TaskCanceledException)
+		{
+			
+		}
+		catch (Exception ex)
+		{
+			Logger.Instance.Log(ex.ToString());
+		}
+	}
+	
+	private void setupImages()
+	{
+		var listBox = this.GetControl<ListBox>("ImagesList");
+		if (listBox.ItemsSource is not IList list)
+		{
+			Logger.Instance.Log("ImagesList items source is not an IList, not populating");
+			return;
+		}
+
+		list.Clear();
+		
+		var scrollViewer = listBox.FindDescendantOfType<ScrollViewer>();
+		if (scrollViewer != null)
+			scrollViewer.Offset = Vector.Zero;
+		
+		if (HistoryCancellationTokenSource != null)
+		{
+			HistoryCancellationTokenSource.Cancel(); 
+			HistoryCancellationTokenSource = null;
+		}
+		
+		HistoryCancellationTokenSource = new CancellationTokenSource();
+
+		_ = populateImagesAsync(list, HistoryCancellationTokenSource.Token);
+	}
+	
+	private async Task populateImagesAsync(IList itemsSource, CancellationToken token)
+	{
+		try
+		{
+			token.ThrowIfCancellationRequested();
+
+			var items = Database.GetImageItems();
+
+			for (var i = 0; i < items.Count; i++)
+			{
+				if (i % 25 == 0)
 					await Task.Delay(25, token);
 
 				itemsSource.Add(items[i]);

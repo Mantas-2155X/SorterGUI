@@ -71,6 +71,8 @@ public class Database
 		Logger.Instance.Log("Cleared database");
 	}
 
+	#region History
+
 	public List<HistoryItem> GetHistoryItems(long amount, bool startFromLast)
 	{
 		if (startFromLast)
@@ -97,6 +99,10 @@ public class Database
 		var historyItemsCount = connection.Table<HistoryItem>().Count();
 		return (int)Math.Ceiling((double)historyItemsCount / amountPerPage);
 	}
+
+	#endregion
+
+	#region Images
 
 	public List<ImageItem> GetImageItems()
 	{
@@ -145,6 +151,10 @@ public class Database
 	{
 		return connection.Table<ImageItem>().Count();
 	}
+	
+	#endregion
+
+	#region Statistics
 
 	public float GetVariation()
 	{
@@ -173,4 +183,6 @@ public class Database
 	{
 		connection.InsertOrReplace(new Statistics { Key = "TotalComparisons", Value = value.ToString() }, typeof(Statistics));
 	}
+
+	#endregion
 }

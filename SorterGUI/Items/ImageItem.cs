@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
@@ -19,6 +20,8 @@ public class ImageItem
 	public long Matches { get; set; }
 	public long Elo { get; set; }
 
+	public Task<IImage> ThumbnailAsync => GetImageAsync(256);
+	
 	public ImageItem()
 	{
 		
@@ -45,11 +48,17 @@ public class ImageItem
 		return Path.GetFileNameWithoutExtension(fileInfo.Name);
 	}
 	
-	public IImage GetImage()
+	public IImage GetImage(int height = -1)
 	{
 		if (!FileExists(out var fileInfo))
 			return new Bitmap(AssetLoader.Open(new Uri("avares://SorterGUI/Assets/missingimage.png")));
 
-		return new Bitmap(fileInfo.FullName);
+		using var fileStream = File.OpenRead(fileInfo.FullName);
+		return height != -1 ? Bitmap.DecodeToHeight(fileStream, height) : new Bitmap(fileStream);
+	}
+	
+	public async Task<IImage> GetImageAsync(int height = -1)
+	{
+		return await Task.Run(() => GetImage(height));
 	}
 }

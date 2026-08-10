@@ -249,7 +249,7 @@ public class Synchronize : Window, INotifyPropertyChanged
 			
 			for (var i = 0; i < fileItems.Count; i++)
 			{
-				if (i % 5 == 0)
+				if (i % 25 == 0)
 					await Task.Delay(25, token);
 
 				var fileItem = fileItems[i];
@@ -261,7 +261,7 @@ public class Synchronize : Window, INotifyPropertyChanged
 			var databaseItems = Database.Instance.GetImageItems();
 			for (var i = 0; i < databaseItems.Count; i++)
 			{
-				if (i % 5 == 0)
+				if (i % 25 == 0)
 					await Task.Delay(25, token);
 
 				var databaseItem = databaseItems[i];
