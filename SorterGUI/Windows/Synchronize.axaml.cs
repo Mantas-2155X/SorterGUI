@@ -115,23 +115,43 @@ public class Synchronize : Window, INotifyPropertyChanged
 				return;
 
 			Synchronized = false;
-		
-			for (var i = 0; i < removeList.Count; i++)
-			{
-				var path = ((SyncItem)removeList[i]!).RelativePath;
-				Logger.Instance.Log($"Removing image item {path} from database");
+			IsEnabled = false;
 			
-				Database.Instance.RemoveImageItem(path);
-			}
-		
-			for (var i = 0; i < addList.Count; i++)
-			{
-				var path = ((SyncItem)addList[i]!).RelativePath;
-				Logger.Instance.Log($"Adding image item {path} to database");
-			
-				Database.Instance.AddImageItem(path);
-			}
+			var processing = new Processing();
+			processing.Show(this);
 
+			var total = removeList.Count + addList.Count;
+			var current = 0f;
+
+			await Task.Run(() =>
+			{
+				for (var i = 0; i < removeList.Count; i++)
+				{
+					var path = ((SyncItem)removeList[i]!).RelativePath;
+					Logger.Instance.Log($"Removing image item {path} from database");
+			
+					Database.Instance.RemoveImageItem(path);
+
+					current++;
+					processing.Progress = current / total * 100f;
+				}
+		
+				for (var i = 0; i < addList.Count; i++)
+				{
+					var path = ((SyncItem)addList[i]!).RelativePath;
+					Logger.Instance.Log($"Adding image item {path} to database");
+			
+					Database.Instance.AddImageItem(path);
+				
+					current++;
+					processing.Progress = current / total * 100f;
+				}
+			});
+
+			processing.CanClose = true;
+			processing.Close();
+
+			IsEnabled = true;
 			Synchronized = true;
 		
 			Close();
