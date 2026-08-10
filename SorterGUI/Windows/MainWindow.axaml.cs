@@ -91,7 +91,7 @@ public class MainWindow : Window, INotifyPropertyChanged
 	public int HistoryPerPage => 50;
 	
 	public int SortImagesRetries;
-	public bool PickingWinner;
+	public bool Cooldown;
 
 	public ImageItem? LeftImage;
 	public ImageItem? RightImage;
@@ -236,18 +236,18 @@ public class MainWindow : Window, INotifyPropertyChanged
 	
 	public void OnLeftImageClicked(object? sender, RoutedEventArgs e)
 	{
-		if (PickingWinner)
+		if (Cooldown)
 			return;
 		
-		_ = pickWinner(true);
+		pickWinner(true);
 	}
 	
 	public void OnRightImageClicked(object? sender, RoutedEventArgs e)
 	{
-		if (PickingWinner)
+		if (Cooldown)
 			return;
 
-		_ = pickWinner(false);
+		pickWinner(false);
 	}
 	
 	public void OnFirstHistoryPageClicked(object? sender, RoutedEventArgs e)
@@ -358,44 +358,39 @@ public class MainWindow : Window, INotifyPropertyChanged
 		this.GetControl<Label>("TotalComparisons").Content = $"Total Comparisons: {Database.GetTotalComparisons()}";
 	}
 
-	private void setupSortImages()
+	private void setupSortImages(bool isCooldown = false, bool leftWon = false)
 	{
-		var availableImages = (float)Database.GetImagesCount();
-		var matchedImages = availableImages - Database.GetUnmatchedImagesCount();
-
-		this.GetControl<Label>("MatchedImages").Content = $"Matched Images: {matchedImages}/{availableImages} ({matchedImages / availableImages * 100f:F0}%)";
-		this.GetControl<Label>("Variation").Content = $"Variation: ~{Database.GetVariation():F2}";
-
-		var imageCount = Database.GetImagesCount();
-		if (imageCount < 2)
+		var enoughImages = Database.GetImagesCount() >= 2;
+		
+		this.GetControl<Label>("SortUnavailable").IsVisible = !enoughImages;
+		this.GetControl<TextBlock>("Sort1").IsVisible = enoughImages;
+		this.GetControl<Grid>("Sort2").IsVisible = enoughImages;
+		this.GetControl<Grid>("Sort3").IsVisible = enoughImages;
+		
+		if (!enoughImages)
 		{
-			this.GetControl<Label>("SortUnavailable").IsVisible = true;
-			this.GetControl<TextBlock>("Sort1").IsVisible = false;
-			this.GetControl<Grid>("Sort2").IsVisible = false;
-			this.GetControl<Grid>("Sort3").IsVisible = false;
-			
 			Logger.Instance.Log("Less than two images registered, skipping sorting");
 			return;
 		}
-		else
-		{
-			this.GetControl<Label>("SortUnavailable").IsVisible = false;
-			this.GetControl<TextBlock>("Sort1").IsVisible = true;
-			this.GetControl<Grid>("Sort2").IsVisible = true;
-			this.GetControl<Grid>("Sort3").IsVisible = true;
-		}
 		
-		this.GetControl<TextBlock>("LeftImageTitle").Text = "";
-		this.GetControl<Label>("RightImageTitle").Content = "";
+		var availableImages = (float)Database.GetImagesCount();
+		var matchedImages = availableImages - Database.GetUnmatchedImagesCount();
 
-		this.GetControl<Image>("LeftImage").Source = null;
-		this.GetControl<Image>("RightImage").Source = null;
+		if (isCooldown)
+			lockImageButtons(leftWon);
+		else
+			unlockImageButtons();
+		
+		this.GetControl<Label>("MatchedImages").Content = $"Matched Images: {matchedImages}/{availableImages} ({matchedImages / availableImages * 100f:F0}%)";
+		this.GetControl<Label>("Variation").Content = $"Variation: ~{Database.GetVariation():F2}";
 		
 		LeftImage = Database.GetRandomImage();
 		RightImage = Database.GetRandomImage(LeftImage);
 		
 		if (LeftImage == null || RightImage == null)
 		{
+			clearImages();
+			
 			if (SortImagesRetries >= 3)
 			{
 				Logger.Instance.Log("Hit the limit for null images, giving up");
@@ -407,37 +402,47 @@ public class MainWindow : Window, INotifyPropertyChanged
 			return;
 		}
 
-		SortImagesRetries = 0;
+		if (!isCooldown)
+			clearImages();
 		
-		this.GetControl<TextBlock>("LeftImageTitle").Text = LeftImage.GetName();
-		this.GetControl<Label>("RightImageTitle").Content = RightImage.GetName();
+		SortImagesRetries = 0;
 
 		if (SortCancellationTokenSource != null)
 		{
-			SortCancellationTokenSource.Cancel(); 
+			SortCancellationTokenSource.Cancel();
 			SortCancellationTokenSource = null;
 		}
 		
 		SortCancellationTokenSource = new CancellationTokenSource();
 		
-		_ = loadImages(SortCancellationTokenSource.Token);
+		_ = loadImages(SortCancellationTokenSource.Token, isCooldown);
 	}
 
-	private async Task loadImages(CancellationToken token)
+	private async Task loadImages(CancellationToken token, bool isCooldown)
 	{
 		try
 		{
 			token.ThrowIfCancellationRequested();
-
+			
 			var height = Screens.Primary!.Bounds.Height;
 			
 			var leftTask = LeftImage!.GetImageAsync(height);
 			var rightTask = RightImage!.GetImageAsync(height);
+			var cooldownTask = Task.Delay(300, token);
 
-			await Task.WhenAll(leftTask, rightTask);
+			if (isCooldown)
+				await Task.WhenAll(leftTask, rightTask, cooldownTask);
+			else
+				await Task.WhenAll(leftTask, rightTask);
 			
+			this.GetControl<TextBlock>("LeftImageTitle").Text = LeftImage.GetName();
+			this.GetControl<Label>("RightImageTitle").Content = RightImage.GetName();
+
 			this.GetControl<Image>("LeftImage").Source = leftTask.Result;
 			this.GetControl<Image>("RightImage").Source = rightTask.Result;
+
+			if (isCooldown)
+				unlockImageButtons();
 		}
 		catch (TaskCanceledException)
 		{
@@ -449,62 +454,68 @@ public class MainWindow : Window, INotifyPropertyChanged
 		}
 	}
 
-	private async Task pickWinner(bool leftWon)
+	private void clearImages()
 	{
-		try
-		{
-			PickingWinner = true;
+		this.GetControl<TextBlock>("LeftImageTitle").Text = "";
+		this.GetControl<Label>("RightImageTitle").Content = "";
 
-			var leftButton = this.GetControl<Button>("LeftImageButton");
-			var rightButton = this.GetControl<Button>("RightImageButton");
-		
-			leftButton.IsEnabled = false;
-			leftButton.Classes.Clear();
-			leftButton.Classes.Add(leftWon ? "GreenDisabledBorder" : "RedDisabledBorder");
-		
-			rightButton.IsEnabled = false;
-			rightButton.Classes.Clear();
-			rightButton.Classes.Add(!leftWon ? "GreenDisabledBorder" : "RedDisabledBorder");
-		
-			getEloChange(leftWon ? LeftImage! : RightImage!, out var winnerEloChange, out var loserEloChange);
-		
-			LeftImage!.Matches += 1;
-			LeftImage.Elo += leftWon ? winnerEloChange : loserEloChange;
-
-			RightImage!.Matches += 1;
-			RightImage.Elo += leftWon ? loserEloChange : winnerEloChange;
-
-			var newVariation = getNewVariation();
-
-			Logger.Log($"{(leftWon ? LeftImage.RelativePath : RightImage.RelativePath)} (+{winnerEloChange}) VS ({loserEloChange}) {(leftWon ? RightImage.RelativePath : LeftImage.RelativePath)} | Var {Database.GetVariation():F2} -> {newVariation:F2}");
-			
-			Database.AddHistoryItem(LeftImage!.Id, RightImage!.Id, leftWon ? winnerEloChange : loserEloChange, leftWon ? loserEloChange : winnerEloChange);
-			
-			Database.SetTotalComparisons(Database.GetTotalComparisons() + 1);
-			Database.SetVariation(newVariation);
-
-			Database.UpdateImageItem(LeftImage);
-			Database.UpdateImageItem(RightImage);
-			
-			await Task.Delay(300);
-			setupSortImages();
-			
-			leftButton.IsEnabled = true;
-			leftButton.Classes.Clear();
-			leftButton.Classes.Add("GreenHoverBorder");
-
-			rightButton.IsEnabled = true;
-			rightButton.Classes.Clear();
-			rightButton.Classes.Add("GreenHoverBorder");
-
-			PickingWinner = false;
-		}
-		catch (Exception ex)
-		{
-			Logger.Instance.Log(ex.ToString());
-		}
+		this.GetControl<Image>("LeftImage").Source = null;
+		this.GetControl<Image>("RightImage").Source = null;
 	}
 
+	private void pickWinner(bool leftWon)
+	{
+		getEloChange(leftWon ? LeftImage! : RightImage!, out var winnerEloChange, out var loserEloChange);
+		
+		LeftImage!.Matches += 1;
+		LeftImage.Elo += leftWon ? winnerEloChange : loserEloChange;
+
+		RightImage!.Matches += 1;
+		RightImage.Elo += leftWon ? loserEloChange : winnerEloChange;
+
+		var newVariation = getNewVariation();
+
+		Logger.Log($"{(leftWon ? LeftImage.RelativePath : RightImage.RelativePath)} (+{winnerEloChange}) VS ({loserEloChange}) {(leftWon ? RightImage.RelativePath : LeftImage.RelativePath)} | Var {Database.GetVariation():F2} -> {newVariation:F2}");
+			
+		Database.AddHistoryItem(LeftImage!.Id, RightImage!.Id, leftWon ? winnerEloChange : loserEloChange, leftWon ? loserEloChange : winnerEloChange);
+			
+		Database.SetTotalComparisons(Database.GetTotalComparisons() + 1);
+		Database.SetVariation(newVariation);
+
+		Database.UpdateImageItem(LeftImage);
+		Database.UpdateImageItem(RightImage);
+		
+		setupSortImages(true, leftWon);
+	}
+
+	private void lockImageButtons(bool leftWon)
+	{
+		var leftButton = this.GetControl<Button>("LeftImageButton");
+		var rightButton = this.GetControl<Button>("RightImageButton");
+		
+		leftButton.IsEnabled = false;
+		leftButton.Classes.Clear();
+		leftButton.Classes.Add(leftWon ? "GreenDisabledBorder" : "RedDisabledBorder");
+		
+		rightButton.IsEnabled = false;
+		rightButton.Classes.Clear();
+		rightButton.Classes.Add(!leftWon ? "GreenDisabledBorder" : "RedDisabledBorder");
+	}
+	
+	private void unlockImageButtons()
+	{
+		var leftButton = this.GetControl<Button>("LeftImageButton");
+		var rightButton = this.GetControl<Button>("RightImageButton");
+				
+		leftButton.IsEnabled = true;
+		leftButton.Classes.Clear();
+		leftButton.Classes.Add("GreenHoverBorder");
+
+		rightButton.IsEnabled = true;
+		rightButton.Classes.Clear();
+		rightButton.Classes.Add("GreenHoverBorder");
+	}
+	
 	private void getEloChange(ImageItem winner, out long winnerEloChange, out long loserEloChange)
 	{
 		var leftWon = LeftImage == winner ? 1 : 0;
