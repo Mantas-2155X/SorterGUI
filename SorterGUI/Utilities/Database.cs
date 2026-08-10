@@ -104,8 +104,16 @@ public class Database
 
 	#region Images
 
-	public List<ImageItem> GetImageItems()
+	public List<ImageItem> GetImageItems(bool sortByElo = false, bool ascending = true)
 	{
+		if (sortByElo)
+		{
+			if (ascending)
+				return connection.Table<ImageItem>().OrderBy(obj => obj.Elo).ToList();
+			
+			return connection.Table<ImageItem>().OrderByDescending(obj => obj.Elo).ToList();
+		}
+		
 		return connection.Table<ImageItem>().ToList();
 	}
 	

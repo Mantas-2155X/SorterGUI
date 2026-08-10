@@ -38,7 +38,11 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="Auto, *, Auto, Auto">
-                                    <extensions:RoundedImage Grid.Column="0" Height="48" Width="48" Stretch="Uniform" CornerRadius="2" Source="{CompiledBinding ThumbnailAsync^}"></extensions:RoundedImage>
+                                    <extensions:RoundedImage Grid.Column="0" ToolTip.Placement="Right" Height="48" Width="48" Stretch="Uniform" CornerRadius="2" Click="OnThumbnailClicked" Source="{CompiledBinding ThumbnailAsync^}">
+                                        <ToolTip.Tip>
+                                            <Image MaxWidth="256" MaxHeight="256" Source="{CompiledBinding ThumbnailAsync^}"/>
+                                        </ToolTip.Tip>
+                                    </extensions:RoundedImage>
                                     <TextBlock Grid.Column="1" VerticalAlignment="Center" TextAlignment="Left" Margin="15, 0, 0, 0" TextWrapping="Wrap" Text="{CompiledBinding RelativePath}"></TextBlock>
                                     <TextBlock Grid.Column="2" Width="125" VerticalAlignment="Center" TextAlignment="Center" Text="{CompiledBinding Elo}"></TextBlock>
                                     <TextBlock Grid.Column="3" Width="125" VerticalAlignment="Center" TextAlignment="Center" Text="{CompiledBinding Matches}"></TextBlock>

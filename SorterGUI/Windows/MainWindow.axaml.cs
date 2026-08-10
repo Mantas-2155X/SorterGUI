@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -16,6 +17,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
+using SorterGUI.Extensions;
 using SorterGUI.Items;
 using SorterGUI.Utilities;
 
@@ -312,6 +314,34 @@ public class MainWindow : Window, INotifyPropertyChanged
 			return;
 
 		textBox.SelectAll();
+	}
+	
+	public void OnThumbnailClicked(object? sender, RoutedEventArgs e)
+	{
+		try
+		{
+			if (sender is not RoundedImage image)
+				return;
+			
+			var listBoxItem = image.FindAncestorOfType<ListBoxItem>();
+			if (listBoxItem == null || listBoxItem.DataContext is not ImageItem imageItem)
+				return;
+
+			if (!imageItem.FileExists(out var fileInfo))
+				return;
+
+			var startInfo = new ProcessStartInfo
+			{
+				FileName = fileInfo.FullName,
+				UseShellExecute = true
+			};
+        
+			Process.Start(startInfo);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(ex.ToString());
+		}
 	}
 	
 	#endregion
@@ -644,7 +674,7 @@ public class MainWindow : Window, INotifyPropertyChanged
 		{
 			token.ThrowIfCancellationRequested();
 
-			var items = Database.GetImageItems();
+			var items = Database.GetImageItems(true, false);
 
 			for (var i = 0; i < items.Count; i++)
 			{
