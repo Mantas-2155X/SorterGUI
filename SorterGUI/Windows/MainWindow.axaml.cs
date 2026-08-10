@@ -13,6 +13,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using SorterGUI.Items;
@@ -424,12 +425,19 @@ public class MainWindow : Window, INotifyPropertyChanged
 		{
 			token.ThrowIfCancellationRequested();
 			
-			var height = Screens.Primary!.Bounds.Height;
-			
-			var leftTask = LeftImage!.GetImageAsync(height);
-			var rightTask = RightImage!.GetImageAsync(height);
+			var leftTask = LeftImage!.GetImageAsync();
+			var rightTask = RightImage!.GetImageAsync();
 			var cooldownTask = Task.Delay(300, token);
 
+			var leftImage = this.GetControl<Image>("LeftImage");
+			var rightImage = this.GetControl<Image>("RightImage");
+
+			if (leftImage.Source is Bitmap leftBitmap)
+				leftBitmap.Dispose();
+			
+			if (rightImage.Source is Bitmap rightBitmap)
+				rightBitmap.Dispose();
+			
 			if (isCooldown)
 				await Task.WhenAll(leftTask, rightTask, cooldownTask);
 			else
@@ -438,8 +446,8 @@ public class MainWindow : Window, INotifyPropertyChanged
 			this.GetControl<TextBlock>("LeftImageTitle").Text = LeftImage.GetName();
 			this.GetControl<Label>("RightImageTitle").Content = RightImage.GetName();
 
-			this.GetControl<Image>("LeftImage").Source = leftTask.Result;
-			this.GetControl<Image>("RightImage").Source = rightTask.Result;
+			leftImage.Source = leftTask.Result;
+			rightImage.Source = rightTask.Result;
 
 			if (isCooldown)
 				unlockImageButtons();
@@ -459,8 +467,17 @@ public class MainWindow : Window, INotifyPropertyChanged
 		this.GetControl<TextBlock>("LeftImageTitle").Text = "";
 		this.GetControl<Label>("RightImageTitle").Content = "";
 
-		this.GetControl<Image>("LeftImage").Source = null;
-		this.GetControl<Image>("RightImage").Source = null;
+		var leftImage = this.GetControl<Image>("LeftImage");
+		var rightImage = this.GetControl<Image>("RightImage");
+
+		if (leftImage.Source is Bitmap leftBitmap)
+			leftBitmap.Dispose();
+		
+		if (rightImage.Source is Bitmap rightBitmap)
+			rightBitmap.Dispose();
+		
+		leftImage.Source = null;
+		rightImage.Source = null;
 	}
 
 	private void pickWinner(bool leftWon)
