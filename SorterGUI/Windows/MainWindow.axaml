@@ -74,8 +74,8 @@
                                     <Setter Property="Background" Value="{CompiledBinding AlternateColor}"></Setter>
                                 </Style>
                             </Button.Styles>
-                            <Panel>
-                                <extensions:RoundedImage Name="LeftImageCtrl" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
+                            <Panel IsHitTestVisible="False">
+                                <extensions:RoundedImage Name="LeftImageCtrl" IsHitTestVisible="False" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
                             </Panel>
                         </Button>
                         <Button Grid.Column="1" Grid.Row="1" Name="RightImageButton" Background="{CompiledBinding AlternateColor}" Classes="GreenHoverBorder" BorderBrush="White" BorderThickness="3" CornerRadius="10" ClipToBounds="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="OnRightImageClicked">
@@ -87,8 +87,8 @@
                                     <Setter Property="Background" Value="{CompiledBinding AlternateColor}"></Setter>
                                 </Style>
                             </Button.Styles>
-                            <Panel>
-                                <extensions:RoundedImage Name="RightImageCtrl" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
+                            <Panel IsHitTestVisible="False">
+                                <extensions:RoundedImage Name="RightImageCtrl" IsHitTestVisible="False" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
                             </Panel>
                         </Button>
                     </Grid>
