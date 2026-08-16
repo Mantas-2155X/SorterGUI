@@ -18,7 +18,7 @@ using SorterGUI.Utilities;
 
 namespace SorterGUI.Windows;
 
-public class Synchronize : Window, INotifyPropertyChanged
+public partial class Synchronize : Window, INotifyPropertyChanged
 {
 	public ObservableCollection<SyncItem> RemoveItems { get; } = new ();
 	public ObservableCollection<SyncItem> AddItems { get; } = new ();
