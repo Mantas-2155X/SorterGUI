@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Solution
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Build Solution
+      run: dotnet publish -c Release -r linux-x64 -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true SorterGUI.sln
+      
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: linux-x64
+        path: SorterGUI/bin/Release/net8.0/linux-x64/publish/
+        retention-days: 1
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Solution
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Build Solution
+      run: dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true SorterGUI.sln
+      
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: windows-x64
+        path: SorterGUI/bin/Release/net8.0/win-x64/publish/
+        retention-days: 1
