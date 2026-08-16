@@ -5,7 +5,7 @@ using Avalonia.Media;
 
 namespace SorterGUI.Windows;
 
-public class Confirmation : Window
+public partial class Confirmation : Window
 {
 	#region Text
 
