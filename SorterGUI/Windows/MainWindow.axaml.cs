@@ -80,7 +80,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 		{
 			if (value < 1 || value > Database.GetHistoryPages(HistoryPerPage))
 			{
-				this.GetControl<NumericUpDown>("HistoryPage").Value = historyPage;
+				this.GetControl<NumericUpDown>("HistoryPageCtrl").Value = historyPage;
 				value = historyPage;
 			}
 
@@ -459,8 +459,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 			var rightTask = RightImage!.GetImageAsync();
 			var cooldownTask = Task.Delay(300, token);
 
-			var leftImage = this.GetControl<Image>("LeftImage");
-			var rightImage = this.GetControl<Image>("RightImage");
+			var leftImage = this.GetControl<Image>("LeftImageCtrl");
+			var rightImage = this.GetControl<Image>("RightImageCtrl");
 
 			if (leftImage.Source is Bitmap leftBitmap)
 				leftBitmap.Dispose();
@@ -497,8 +497,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 		this.GetControl<TextBlock>("LeftImageTitle").Text = "";
 		this.GetControl<Label>("RightImageTitle").Content = "";
 
-		var leftImage = this.GetControl<Image>("LeftImage");
-		var rightImage = this.GetControl<Image>("RightImage");
+		var leftImage = this.GetControl<Image>("LeftImageCtrl");
+		var rightImage = this.GetControl<Image>("RightImageCtrl");
 
 		if (leftImage.Source is Bitmap leftBitmap)
 			leftBitmap.Dispose();
