@@ -75,7 +75,7 @@
                                 </Style>
                             </Button.Styles>
                             <Panel>
-                                <extensions:RoundedImage Name="LeftImage" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
+                                <extensions:RoundedImage Name="LeftImageCtrl" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
                             </Panel>
                         </Button>
                         <Button Grid.Column="1" Grid.Row="1" Name="RightImageButton" Background="{CompiledBinding AlternateColor}" Classes="GreenHoverBorder" BorderBrush="White" BorderThickness="3" CornerRadius="10" ClipToBounds="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Click="OnRightImageClicked">
@@ -88,7 +88,7 @@
                                 </Style>
                             </Button.Styles>
                             <Panel>
-                                <extensions:RoundedImage Name="RightImage" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
+                                <extensions:RoundedImage Name="RightImageCtrl" Stretch="Uniform" CornerRadius="10"></extensions:RoundedImage>
                             </Panel>
                         </Button>
                     </Grid>
@@ -125,7 +125,7 @@
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" Spacing="5">
                             <Button Background="{CompiledBinding SecondaryColor}" Click="OnFirstHistoryPageClicked">&lt;&lt;</Button>
                             <Button Background="{CompiledBinding SecondaryColor}" Click="OnPreviousHistoryPageClicked">&lt;</Button>
-                            <NumericUpDown Name="HistoryPage" FormatString="N0" ParsingNumberStyle="Integer" Increment="1" Width="75" Height="30" FontSize="13" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Value="{CompiledBinding HistoryPage, UpdateSourceTrigger=LostFocus}" GotFocus="OnHistoryPageGotFocus" KeyDown="OnHistoryPageKeyDown" ShowButtonSpinner="False" AllowSpin="False">
+                            <NumericUpDown Name="HistoryPageCtrl" FormatString="N0" ParsingNumberStyle="Integer" Increment="1" Width="75" Height="30" FontSize="13" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Value="{CompiledBinding HistoryPage, UpdateSourceTrigger=LostFocus}" GotFocus="OnHistoryPageGotFocus" KeyDown="OnHistoryPageKeyDown" ShowButtonSpinner="False" AllowSpin="False">
                                 <NumericUpDown.Styles>
                                     <Style Selector="NumericUpDown /template/ TextBox#PART_TextBox">
                                         <Setter Property="MaxLength" Value="7"/>
