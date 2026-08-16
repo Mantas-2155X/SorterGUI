@@ -23,7 +23,7 @@ using SorterGUI.Utilities;
 
 namespace SorterGUI.Windows;
 
-public class MainWindow : Window, INotifyPropertyChanged
+public partial class MainWindow : Window, INotifyPropertyChanged
 {
 	public Logger Logger { get; }
 	public Settings Settings { get; }
