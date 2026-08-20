@@ -125,9 +125,9 @@ public class Database
 	public ImageItem? GetRandomImage(ImageItem? excludeImage = null)
 	{
 		if (excludeImage == null)
-			return connection.Query<ImageItem>("SELECT * FROM ImageItem ORDER BY RANDOM() LIMIT 1").FirstOrDefault();
+			return connection.Query<ImageItem>("SELECT * FROM ImageItem ORDER BY RANDOM() / (Matches + 1.0) DESC LIMIT 1").FirstOrDefault();
 		
-		return connection.Query<ImageItem>("SELECT * FROM ImageItem WHERE Id != ? ORDER BY RANDOM() LIMIT 1", excludeImage.Id).FirstOrDefault();
+		return connection.Query<ImageItem>("SELECT * FROM ImageItem WHERE Id != ? ORDER BY RANDOM() / (Matches + 1.0) DESC LIMIT 1", excludeImage.Id).FirstOrDefault();
 	}
 
 	public void RemoveImageItem(string relativePath)
