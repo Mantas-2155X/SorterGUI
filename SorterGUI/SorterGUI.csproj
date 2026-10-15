@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <AssemblyVersion>0.0.0.1</AssemblyVersion>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
         <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
         <ApplicationIcon>Assets/icon.ico</ApplicationIcon>
     </PropertyGroup>
