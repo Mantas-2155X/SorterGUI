@@ -159,6 +159,12 @@
                     </Grid>
                     
                     <Grid Background="{CompiledBinding AlternateColor}" ColumnDefinitions="125,*,Auto" Height="43">
+                        <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{CompiledBinding ExportText}"></Label>
+                        <Label Grid.Column="1" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="{CompiledBinding ExportDescText}"></Label>
+                        <Button Grid.Column="2" Margin="0,4, 4, 4" Background="{CompiledBinding PrimaryColor}" Width="100" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnExportClicked" Content="{CompiledBinding ExportText}"></Button>
+                    </Grid>
+                    
+                    <Grid Background="{CompiledBinding AlternateColor}" ColumnDefinitions="125,*,Auto" Height="43">
                         <Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{CompiledBinding DatabaseText}"></Label>
                         <Label Grid.Column="1" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="{CompiledBinding DatabaseDescText}"></Label>
                         <Button Grid.Column="2" Foreground="OrangeRed" Margin="0,4, 4, 4" Background="{CompiledBinding PrimaryColor}" Width="100" Height="35" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Click="OnResetDatabaseClicked" Content="{CompiledBinding ResetText}"></Button>

@@ -135,6 +135,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 	}
 
 	public string PickText => "Pick";
+	public string ExportText => "Export";
+	public string ExportDescText => "Export registered images into a path, renaming them to their elo";
 	public string DatabaseText => "Database";
 	public string DatabaseDescText => "Remove all statistics, history and registered images ratings";
 	public string ResetText => "Reset";
@@ -195,6 +197,49 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 			}
 		
 			ImagesPathSettingText = path;
+		}
+		catch (Exception ex)
+		{
+			Logger.Instance.Log(ex.ToString());
+		}
+	}
+
+	public async void OnExportClicked(object? sender, RoutedEventArgs e)
+	{
+		try
+		{
+			var directories = await GetTopLevel(this)!.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+			{
+				Title = "Select Export Directory",
+				AllowMultiple = false
+			});
+
+			if (directories.Count != 1)
+			{
+				Logger.Instance.Log("No export directory picked");
+				return;
+			}
+
+			var path = directories[0].TryGetLocalPath() ?? "";
+			if (!Directory.Exists(path))
+			{
+				Logger.Instance.Log("Picked export directory does not exist");
+				return;
+			}
+
+			var imageItems = Database.GetImageItems();
+			for (var i = 0; i < imageItems.Count; i++)
+			{
+				var imageItem = imageItems[i];
+				if (!imageItem.FileExists(out var fileInfo))
+				{
+					Logger.Instance.Log($"Image item with relative path {imageItem.RelativePath} does not exist, skipping export");
+					continue;
+				}
+
+				var targetPath = Path.Combine(path, $"{imageItem.Elo}_{fileInfo.Name}");
+				fileInfo.CopyTo(targetPath, true);
+			}
 		}
 		catch (Exception ex)
 		{
