@@ -15,6 +15,7 @@ using Avalonia.Media;
 using Avalonia.VisualTree;
 using SorterGUI.Items;
 using SorterGUI.Utilities;
+using System.Linq;
 
 namespace SorterGUI.Windows;
 
@@ -29,7 +30,9 @@ public partial class Synchronize : Window, INotifyPropertyChanged
 	{
 		".png",
 		".jpg",
-		".jpeg"
+		".jpeg",
+		".webp",
+		".jfif"
 	};
 
 	private bool canSynchronize;
@@ -333,8 +336,11 @@ public partial class Synchronize : Window, INotifyPropertyChanged
 		{
 			var fileInfo = new FileInfo(files[i]);
 			
-			if (!imageExtensions.Contains(fileInfo.Extension))
+			if (!imageExtensions.Contains(fileInfo.Extension, StringComparer.InvariantCultureIgnoreCase))
+			{
+				Logger.Instance.Log($"Skipping {fileInfo.FullName} as the format is not recognized");
 				continue;
+			}
 			
 			list.Add(new SyncItem
 			{

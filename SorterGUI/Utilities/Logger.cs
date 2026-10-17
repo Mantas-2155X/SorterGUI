@@ -21,11 +21,6 @@ public class Logger
 		
 		if (!Directory.Exists(directory))
 			Directory.CreateDirectory(directory);
-		
-		if (!File.Exists(path))
-			return;
-
-		File.Delete(path);
 	}
 	
 	public void Log(string message)

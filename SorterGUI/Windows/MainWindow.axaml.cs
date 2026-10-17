@@ -567,8 +567,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
 		var newVariation = getNewVariation();
 
-		Logger.Log($"{(leftWon ? LeftImage.RelativePath : RightImage.RelativePath)} (+{winnerEloChange}) VS ({loserEloChange}) {(leftWon ? RightImage.RelativePath : LeftImage.RelativePath)} | Var {Database.GetVariation():F2} -> {newVariation:F2}");
-			
 		Database.AddHistoryItem(LeftImage!.Id, RightImage!.Id, leftWon ? winnerEloChange : loserEloChange, leftWon ? loserEloChange : winnerEloChange);
 			
 		Database.SetTotalComparisons(Database.GetTotalComparisons() + 1);
