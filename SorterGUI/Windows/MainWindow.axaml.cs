@@ -388,6 +388,17 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 			Logger.Log(ex.ToString());
 		}
 	}
+
+	public void OnKeyDown(object? sender, KeyEventArgs e)
+	{
+		if (SelectedTabIndex != 2)
+			return;
+		
+		if (e.Key == Key.Left && this.GetControl<Button>("LeftImageButton").IsEnabled)
+			OnLeftImageClicked(sender, e);
+		else if (e.Key == Key.Right && this.GetControl<Button>("RightImageButton").IsEnabled)
+			OnRightImageClicked(sender, e);
+	}
 	
 	#endregion
 	
